@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pattern Play — Year 7</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="brand">
+      <span class="brand__icon" id="brandEmoji" aria-hidden="true">🎮</span>
+      <div>
+        <h1>Pattern Play</h1>
+        <p class="tagline">Year 7</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="btn btn--ghost" id="btnHowTo" aria-haspopup="dialog">How to play</button>
+      <button type="button" class="btn btn--ghost" id="btnCodex" aria-haspopup="dialog">
+        Pattern cards <span class="badge" id="codexCount" aria-live="polite">0/5</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav class="mission-nav" aria-label="Levels">
+      <h2 class="visually-hidden">Levels — unlock in order</h2>
+      <ol class="mission-strip" id="missionStrip"></ol>
+    </nav>
+
+    <main id="main" class="main-stage">
+      <section class="intro-card" id="introCard" hidden>
+        <h2>Welcome</h2>
+        <p>
+          Each <strong>level</strong> has a different look. Look at the row of tiles,
+          work out the <strong>rule</strong>, then <strong>type your answer</strong>.
+          Get it right to unlock the next level and a new <strong>pattern card</strong>.
+        </p>
+        <ul>
+          <li>Look at the whole row before you type.</li>
+          <li>You’ll see each new pattern card after a correct answer.</li>
+          <li>Press <strong>Submit</strong> or Enter to check.</li>
+        </ul>
+        <button type="button" class="btn btn--primary" id="btnStart">Start level 1</button>
+      </section>
+
+      <section class="game-panel" id="gamePanel" aria-live="polite" aria-atomic="false">
+        <header class="game-panel__head">
+          <h2 id="missionTitle">Level</h2>
+        </header>
+
+        <p class="mission-brief" id="missionBrief"></p>
+
+        <div class="pattern-stage" aria-label="Pattern row">
+          <div class="pattern-stage__lines" id="patternRow"></div>
+        </div>
+
+        <p class="question" id="questionText"></p>
+
+        <div class="answer-field answer-field--single" id="answerFieldSingle">
+          <label class="answer-field__label" for="answerInput" id="answerLabel">Your answer</label>
+          <input
+            type="text"
+            id="answerInput"
+            class="answer-input"
+            maxlength="24"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
+            inputmode="text"
+          />
+        </div>
+
+        <div class="answer-field answer-field--pair" id="answerFieldPair" hidden>
+          <div class="answer-field__pair-row">
+            <div class="answer-field__cell">
+              <label class="answer-field__label" for="answerInput1">Top line</label>
+              <input
+                type="text"
+                id="answerInput1"
+                class="answer-input"
+                maxlength="12"
+                autocomplete="off"
+                autocorrect="off"
+                autocapitalize="off"
+                spellcheck="false"
+                inputmode="numeric"
+              />
+            </div>
+            <div class="answer-field__cell">
+              <label class="answer-field__label" for="answerInput2">Bottom line</label>
+              <input
+                type="text"
+                id="answerInput2"
+                class="answer-input"
+                maxlength="12"
+                autocomplete="off"
+                autocorrect="off"
+                autocapitalize="off"
+                spellcheck="false"
+                inputmode="numeric"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="btn btn--primary" id="btnSubmit">Submit</button>
+        </div>
+
+        <div class="feedback" id="feedback" role="status" aria-live="assertive"></div>
+      </section>
+
+      <section class="complete-card" id="completeCard" hidden>
+        <h2>You finished all levels</h2>
+        <p>Your pattern cards are full. Nice work.</p>
+        <button type="button" class="btn btn--primary" id="btnReplay">Play again from level 1</button>
+      </section>
+    </main>
+  </div>
+
+  <!-- How to play -->
+  <div class="modal" id="modalHowTo" role="dialog" aria-modal="true" aria-labelledby="howToTitle" hidden>
+    <div class="modal__backdrop" data-close-modal></div>
+    <div class="modal__content">
+      <button type="button" class="modal__close" data-close-modal aria-label="Close">&times;</button>
+      <h2 id="howToTitle">How to play</h2>
+      <ol>
+        <li>Only <strong>level 1</strong> is open at first. Finish it to unlock the next.</li>
+        <li>Read the row of tiles and work out what goes in the gap.</li>
+        <li><strong>Type your answer</strong> in the box, then press <strong>Submit</strong> or Enter.</li>
+        <li>Wrong guess? Read the message and try again.</li>
+        <li>After each level you’ll see the <strong>pattern card</strong> you earned — tap <strong>Next</strong> to continue.</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Pattern cards (library) -->
+  <div class="modal" id="modalCodex" role="dialog" aria-modal="true" aria-labelledby="codexTitle" hidden>
+    <div class="modal__backdrop" data-close-modal></div>
+    <div class="modal__content modal__content--wide">
+      <button type="button" class="modal__close" data-close-modal aria-label="Close">&times;</button>
+      <h2 id="codexTitle">Pattern cards</h2>
+      <p class="codex-intro">You earn a card when you finish a level. Locked cards show “???” until then.</p>
+      <div class="codex-grid" id="codexGrid"></div>
+    </div>
+  </div>
+
+  <!-- Card unlocked (must use Next — no backdrop close) -->
+  <div class="modal" id="modalCardReward" role="dialog" aria-modal="true" aria-labelledby="cardRewardHeading" hidden>
+    <div class="modal__backdrop modal__backdrop--static" aria-hidden="true"></div>
+    <div class="modal__content modal__content--reward">
+      <h2 id="cardRewardHeading">Pattern card unlocked</h2>
+      <p class="card-reward__meta" id="cardRewardLevel"></p>
+      <p class="card-reward__task" id="cardRewardTask"></p>
+      <div class="card-reward__box" id="cardRewardBox"></div>
+      <button type="button" class="btn btn--primary btn--wide" id="btnCardNext">Next level</button>
+    </div>
+  </div>
+
+  <script src="js/game.js" defer></script>
+</body>
+</html>

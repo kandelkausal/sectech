@@ -36,7 +36,8 @@
         <h2>Welcome</h2>
         <p>
           Each <strong>level</strong> has a different look. Look at the row of tiles,
-          work out the <strong>rule</strong>, then <strong>type your answer</strong>.
+          work out the <strong>rule</strong>, then <strong>give your answer</strong>
+          (type it or choose an option).
           Get it right to unlock the next level and a new <strong>pattern card</strong>.
         </p>
         <ul>
@@ -73,6 +74,13 @@
             spellcheck="false"
             inputmode="text"
           />
+        </div>
+
+        <div class="answer-field answer-field--choice" id="answerFieldChoice" hidden>
+          <fieldset class="choice-fieldset">
+            <legend class="answer-field__label" id="choiceLegend">Choose one</legend>
+            <div class="choice-options" id="choiceOptions" role="radiogroup" aria-labelledby="choiceLegend"></div>
+          </fieldset>
         </div>
 
         <div class="answer-field answer-field--pair" id="answerFieldPair" hidden>
@@ -132,7 +140,7 @@
       <ol>
         <li>Only <strong>level 1</strong> is open at first. Finish it to unlock the next.</li>
         <li>Read the row of tiles and work out what goes in the gap.</li>
-        <li><strong>Type your answer</strong> in the box, then press <strong>Submit</strong> or Enter.</li>
+        <li><strong>Type your answer</strong> in the box (or <strong>choose an option</strong> on the last level), then press <strong>Submit</strong> or Enter.</li>
         <li>Wrong guess? Read the message and try again.</li>
         <li>After each level you’ll see the <strong>pattern card</strong> you earned — tap <strong>Next</strong> to continue.</li>
       </ol>

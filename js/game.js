@@ -20,44 +20,46 @@
     {
       id: "repeating",
       title: "Repeating pattern",
-      def: "The same short group repeats over and over.",
+      def: "A repeating pattern is a sequence where the same group of elements appears over and over in the same order.",
       look: "Find how many tiles long the group is before it starts again.",
       ex: "□, △, ○, □, △, ○, …",
     },
     {
-      id: "alternating",
-      title: "Alternating sequences",
-      def: "Two patterns hiding inside one line. It looks like one sequence but is actually two running in parallel.",
+      id: "interleaved",
+      title: "Interleaved / two-track pattern",
+      def: "Two separate sequences zipped together. Split every other number and you get two independent streams.",
       look: "Write the odd spots in one row and the even spots in another.",
-      ex: "5, 100, 7, 110, 9, 120, …",
+      ex:
+        "2, 30, 4, 60, 6, 90, …\nTrack 1: 2 … 4 … 6 (+2)\nTrack 2: 30 … 60 … 90 (+30)\n(the two tracks have nothing to do with each other as neighbours)",
     },
     {
-      id: "growing",
-      title: "Growing or decreasing pattern",
-      def: "The step between neighbours stays the same — numbers can go up (growing) or down (decreasing) each time.",
+      id: "decreasing",
+      title: "Decreasing pattern",
+      def: "The step between neighbours stays the same, and each new number is smaller than the one before — you subtract the same amount each time.",
       look: "Work out the gap between neighbours. Is it always the same?",
-      ex: "50, 44, 38, … (decreasing — take away 6 each time)",
+      ex: "50, 44, 38, … (take away 6 each time)",
     },
     {
       id: "fibonacci",
-      title: "Fibonacci pattern",
-      def: "The next number is the two numbers before it, added together.",
+      title: "Fibonacci sequence",
+      def: "Fibonacci sequence is a number pattern where each number is made by adding the two numbers before it.",
       look: "Add the last two numbers to guess the next one.",
-      ex: "2, 2, 4, 6, 10, …",
+      ex: "0, 1, 1, 2, 3, 5, …",
     },
     {
-      id: "prime",
-      title: "Prime numbers",
-      def: "A prime is a whole number above 1 that only splits into 1 × itself (only two factors).",
-      look: "Try small times tables. A prime won’t fit except 1 × itself.",
-      ex: "11 is prime; 12 is not (3×4, 2×6, …).",
+      id: "alternating",
+      title: "Alternating pattern",
+      def: "One sequence with two rules that swap every step — rule A, rule B, rule A, rule B, and so on.",
+      look: "Compare neighbours. Do you see two different gaps that repeat?",
+      ex: "5, 8, 6, 9, 7, …\nodd steps: +3\neven steps: −2",
     },
   ];
 
   /**
-   * answerType: "pair" = two whole numbers (comma or space); "number" = one integer; "label" unused reserved
-   * correctAnswer: normalised string (e.g. "9,7", "26")
-   * packetLines: optional — two+ rows; else use packets as one row
+   * answerType: "pair" | "number" | "label" | "choice"
+   * correctAnswer: normalised string (e.g. "9,7", "26", or choice id e.g. "alternating")
+   * choice missions: choices: [{ id, label }]; compare correctAnswer to id
+   * packetLines: optional — two+ rows; else use packets as one row; packet.symbol + optional packet.size (xxl…xs)
    */
   const MISSIONS = [
     {
@@ -78,63 +80,73 @@
     {
       id: 2,
       theme: "sport",
-      stripLabel: "Court — two rules",
-      title: "Level 2 — Sports court: two number rows",
+      stripLabel: "Canteen screen",
+      title: "Level 2 — Order numbers",
       brief:
-        "Score numbers from two drills are mixed in one line — odd steps are one drill, even steps are another. What’s the next number?",
-      question: "What number comes next? (type the number only)",
+        "The screen mixes two queues into one line of order numbers. One slot in the middle is still blank — what whole number belongs there?",
+      question: "What number is missing?",
       answerType: "number",
-      correctAnswer: "26",
+      correctAnswer: "24",
       packets: [
-        { v: "10" },
-        { v: "20" },
-        { v: "12" },
-        { v: "22" },
+        { v: "6" },
+        { v: "15" },
         { v: "14" },
-        { v: "24" },
-        { v: "16" },
         { t: "q" },
+        { v: "22" },
+        { v: "33" },
+        { v: "30" },
       ],
-      codexId: "alternating",
+      codexId: "interleaved",
     },
     {
       id: 3,
       theme: "space",
-      stripLabel: "Space — count down",
-      title: "Level 3 — Space: decreasing hops",
+      stripLabel: "One-line log",
+      title: "Level 3 — Gap in the log",
       brief:
-        "Each hop goes down by the same amount — like a rover stepping to lower moon rocks. What number is the next hop?",
-      question: "What number comes next? (type the number only)",
+        "Someone wrote this list of numbers in order, but one spot in the middle was left blank. What whole number belongs there?",
+      question: "What number is missing?",
       answerType: "number",
-      correctAnswer: "10",
-      packets: [{ v: "40" }, { v: "34" }, { v: "28" }, { v: "22" }, { v: "16" }, { t: "q" }],
-      codexId: "growing",
+      correctAnswer: "44",
+      packets: [{ v: "71" }, { v: "62" }, { v: "53" }, { t: "q" }, { v: "35" }, { v: "26" }],
+      codexId: "decreasing",
     },
     {
       id: 4,
       theme: "garden",
-      stripLabel: "Garden — plant maths",
-      title: "Level 4 — Garden: add last two leaves",
+      stripLabel: "Pot tags",
+      title: "Level 4 — Tag blew off",
       brief:
-        "Plant heights follow a special rule: the next height is the last two heights added together. What’s next?",
-      question: "What number comes next? (type the number only)",
+        "Tiny tags with numbers sit in a row along the pots. The tag on the last pot blew off — what number was on it?",
+      question: "What number comes next?",
       answerType: "number",
-      correctAnswer: "29",
-      packets: [{ v: "3" }, { v: "4" }, { v: "7" }, { v: "11" }, { v: "18" }, { t: "q" }],
+      correctAnswer: "13",
+      packets: [{ v: "0" }, { v: "1" }, { v: "1" }, { v: "2" }, { v: "3" }, { v: "5" }, { v: "8" }, { t: "q" }],
       codexId: "fibonacci",
     },
     {
       id: 5,
       theme: "music",
-      stripLabel: "Stage — special number",
-      title: "Level 5 — Music stage: pick the special number",
+      stripLabel: "Symbol strip",
+      title: "Level 5 — What pattern is this?",
       brief:
-        "Backstage tags show five numbers. Only one is prime: it only splits into 1 × itself. Which tag is it?",
-      question: "Which number is prime? (type the number only)",
-      answerType: "number",
-      correctAnswer: "11",
-      packets: [{ v: "11" }, { v: "4" }, { v: "6" }, { v: "9" }, { v: "15" }],
-      codexId: "prime",
+        "Nothing’s missing — just decide what kind of pattern this is.",
+      question: "Choose the option that fits this symbol row.",
+      answerType: "choice",
+      correctAnswer: "alternating",
+      choices: [
+        { id: "increasing", label: "Increasing pattern" },
+        { id: "decreasing", label: "Decreasing pattern" },
+        { id: "alternating", label: "Alternating pattern" },
+      ],
+      packets: [
+        { v: "△", symbol: true, size: "xxl" },
+        { v: "□", symbol: true, size: "xs" },
+        { v: "△", symbol: true, size: "xxl" },
+        { v: "□", symbol: true, size: "xs" },
+        { v: "△", symbol: true, size: "xxl" },
+      ],
+      codexId: "alternating",
     },
   ];
 
@@ -149,6 +161,8 @@
     brandEmoji: document.getElementById("brandEmoji"),
     questionText: document.getElementById("questionText"),
     answerFieldSingle: document.getElementById("answerFieldSingle"),
+    answerFieldChoice: document.getElementById("answerFieldChoice"),
+    choiceOptions: document.getElementById("choiceOptions"),
     answerFieldPair: document.getElementById("answerFieldPair"),
     answerInput: document.getElementById("answerInput"),
     answerInput1: document.getElementById("answerInput1"),
@@ -180,9 +194,10 @@
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const p = JSON.parse(raw);
+        const codexUnlocked = new Set(p.codexUnlocked || []);
         return {
           highestUnlocked: Math.min(Math.max(1, p.highestUnlocked || 1), MISSIONS.length + 1),
-          codexUnlocked: new Set(p.codexUnlocked || []),
+          codexUnlocked,
           seenIntro: !!p.seenIntro,
         };
       }
@@ -243,6 +258,16 @@
       }
       return { ok: true, value: u };
     }
+    if (mission.answerType === "choice") {
+      if (!sanitised) {
+        return { ok: false, error: "Choose an option, then press Submit." };
+      }
+      const allowed = new Set((mission.choices || []).map((c) => c.id));
+      if (!allowed.has(sanitised)) {
+        return { ok: false, error: "Pick one of the options shown." };
+      }
+      return { ok: true, value: sanitised };
+    }
     const digits = sanitised.replace(/\s/g, "");
     if (!/^\d+$/.test(digits)) {
       return { ok: false, error: "Use a whole number with digits 0–9 only (no letters or symbols)." };
@@ -253,6 +278,16 @@
   function variantForIndex(i) {
     const mods = ["a", "b", "c"];
     return mods[i % 3];
+  }
+
+  function shuffleInPlace(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const t = arr[i];
+      arr[i] = arr[j];
+      arr[j] = t;
+    }
+    return arr;
   }
 
   function applyTheme(mission) {
@@ -271,7 +306,8 @@
     let tileIndex = 0;
     lines.forEach((line) => {
       const row = document.createElement("div");
-      row.className = "pattern-stage__row";
+      const sizedSymbols = line.some((p) => p && p.symbol && p.size);
+      row.className = sizedSymbols ? "pattern-stage__row pattern-stage__row--symbol-sizes" : "pattern-stage__row";
       line.forEach((p, i) => {
         if (i > 0) {
           const ar = document.createElement("span");
@@ -294,13 +330,21 @@
           wrap.appendChild(mark);
           wrap.title = "Missing";
         } else {
-          wrap.className = `packet packet--${variant} packet--value-only`;
+          const sym = !!p.symbol;
+          const sz = sym && p.size ? String(p.size) : "";
+          wrap.className = `packet packet--${variant} packet--value-only${sym ? " packet--symbol" : ""}`;
           wrap.setAttribute("role", "img");
           const code = document.createElement("span");
-          code.className = "packet__code";
+          if (sym) {
+            code.className = sz
+              ? `packet__code packet__code--symbol packet__symbol-size--${sz}`
+              : "packet__code packet__code--symbol";
+          } else {
+            code.className = "packet__code";
+          }
           code.textContent = p.v;
           wrap.appendChild(code);
-          wrap.title = `Label ${p.v}`;
+          wrap.title = sym ? (sz ? `Symbol ${p.v} (${sz} size)` : `Symbol ${p.v}`) : `Label ${p.v}`;
         }
         row.appendChild(wrap);
       });
@@ -363,12 +407,38 @@
 
     if (mission.answerType === "pair") {
       el.answerFieldSingle.hidden = true;
+      el.answerFieldChoice.hidden = true;
       el.answerFieldPair.hidden = false;
       el.answerInput1.value = "";
       el.answerInput2.value = "";
+    } else if (mission.answerType === "choice") {
+      el.answerFieldSingle.hidden = true;
+      el.answerFieldPair.hidden = true;
+      el.answerFieldChoice.hidden = false;
+      el.choiceOptions.innerHTML = "";
+      const opts = [...(mission.choices || [])];
+      shuffleInPlace(opts);
+      opts.forEach((c) => {
+        const rid = `choice-m${mission.id}-${c.id}`;
+        const label = document.createElement("label");
+        label.className = "choice-option";
+        label.htmlFor = rid;
+        const input = document.createElement("input");
+        input.type = "radio";
+        input.name = "patternChoice";
+        input.value = c.id;
+        input.id = rid;
+        const span = document.createElement("span");
+        span.className = "choice-option__text";
+        span.textContent = c.label;
+        label.appendChild(input);
+        label.appendChild(span);
+        el.choiceOptions.appendChild(label);
+      });
     } else {
       el.answerFieldSingle.hidden = false;
       el.answerFieldPair.hidden = true;
+      el.answerFieldChoice.hidden = true;
       if (mission.answerType === "label") {
         el.answerLabel.textContent = "Type your answer (e.g. S1, S2, S3)";
       } else {
@@ -387,6 +457,9 @@
     requestAnimationFrame(() => {
       if (mission.answerType === "pair") {
         el.answerInput1.focus();
+      } else if (mission.answerType === "choice") {
+        const first = el.choiceOptions.querySelector('input[name="patternChoice"]');
+        if (first) first.focus();
       } else {
         el.answerInput.focus();
       }
@@ -420,7 +493,7 @@
           <p class="label">What it means</p>
           <p>${escapeHtml(c.def)}</p>
           <p class="label">Example</p>
-          <p>${escapeHtml(c.ex)}</p>`;
+          <p class="pattern-example-text">${escapeHtml(c.ex)}</p>`;
       }
       el.codexGrid.appendChild(card);
     });
@@ -445,6 +518,7 @@
     pEx.className = "label";
     pEx.textContent = "Example";
     const pExBody = document.createElement("p");
+    pExBody.className = "pattern-example-text";
     pExBody.textContent = def.ex;
 
     el.cardRewardBox.appendChild(h3);
@@ -491,6 +565,10 @@
         return;
       }
       parsed = parseAnswer(mission, `${a},${b}`);
+    } else if (mission.answerType === "choice") {
+      const checked = el.answerFieldChoice.querySelector('input[name="patternChoice"]:checked');
+      const raw = checked ? sanitizeAnswer(checked.value) : "";
+      parsed = parseAnswer(mission, raw);
     } else {
       const clean = sanitizeAnswer(el.answerInput.value);
       parsed = parseAnswer(mission, clean);
@@ -579,6 +657,13 @@
     });
     el.answerInput2.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
+        e.preventDefault();
+        if (!el.btnSubmit.disabled) onSubmit();
+      }
+    });
+
+    el.choiceOptions.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && e.target.matches && e.target.matches('input[type="radio"]')) {
         e.preventDefault();
         if (!el.btnSubmit.disabled) onSubmit();
       }

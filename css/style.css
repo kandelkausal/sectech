@@ -391,6 +391,57 @@ code {
   box-shadow: 0 0 0 2px var(--theme-glow);
 }
 
+.answer-field--choice {
+  max-width: 28rem;
+}
+
+.choice-fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.choice-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+}
+
+.choice-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.choice-option:hover {
+  border-color: var(--accent-dim);
+}
+
+.choice-option:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--theme-glow);
+}
+
+.choice-option input {
+  margin-top: 0.2rem;
+  flex-shrink: 0;
+  accent-color: var(--accent);
+}
+
+.choice-option__text {
+  flex: 1;
+}
+
 .answer-field__pair-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -433,6 +484,10 @@ code {
   gap: 0.5rem;
 }
 
+.pattern-stage__row--symbol-sizes {
+  align-items: flex-end;
+}
+
 .packet {
   display: inline-flex;
   flex-direction: column;
@@ -452,6 +507,43 @@ code {
 .packet--value-only .packet__code {
   font-size: 0.95rem;
   line-height: 1.2;
+}
+
+/* Symbol tiles: default size when no tier */
+.packet--symbol .packet__code--symbol:not([class*="packet__symbol-size--"]) {
+  font-size: 1.45rem;
+  line-height: 1.1;
+}
+
+/* Level 5: big △ → small □ → mid △ → smaller □ → big △ */
+.packet__code.packet__code--symbol.packet__symbol-size--xxl {
+  font-size: 2.15rem;
+  line-height: 1;
+}
+
+.packet__code.packet__code--symbol.packet__symbol-size--xl {
+  font-size: 1.85rem;
+  line-height: 1;
+}
+
+.packet__code.packet__code--symbol.packet__symbol-size--lg {
+  font-size: 1.55rem;
+  line-height: 1.05;
+}
+
+.packet__code.packet__code--symbol.packet__symbol-size--md {
+  font-size: 1.38rem;
+  line-height: 1.05;
+}
+
+.packet__code.packet__code--symbol.packet__symbol-size--sm {
+  font-size: 1rem;
+  line-height: 1.05;
+}
+
+.packet__code.packet__code--symbol.packet__symbol-size--xs {
+  font-size: 0.78rem;
+  line-height: 1.05;
 }
 
 .packet--a {
@@ -722,4 +814,8 @@ code {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--text);
+}
+
+.pattern-example-text {
+  white-space: pre-line;
 }

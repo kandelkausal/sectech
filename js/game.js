@@ -181,6 +181,7 @@
     learnSidebar: document.getElementById("learnSidebar"),
     learnMain: document.getElementById("learnMain"),
     learnChapterLabel: document.getElementById("learnChapterLabel"),
+    learnEyebrow: document.getElementById("learnEyebrow"),
     learnPageLabel: document.getElementById("learnPageLabel"),
     learnPagerDots: document.getElementById("learnPagerDots"),
     btnLearn: document.getElementById("btnLearn"),
@@ -493,6 +494,7 @@
     const onLast = currentLearnPage === LEARN_PAGE_COUNT - 1;
 
     el.btnLearnPrev.hidden = onFirst;
+    if (el.learnEyebrow) el.learnEyebrow.hidden = !onFirst;
     if (el.learnFooter) el.learnFooter.classList.toggle("is-first-page", onFirst);
     el.btnLearnNext.textContent = onLast ? "Enter Pattern Play" : "Next page";
 

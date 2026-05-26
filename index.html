@@ -6,167 +6,524 @@
   <title>Pattern Play — Year 7</title>
   <link rel="stylesheet" href="css/style.css" />
 </head>
-<body>
+<body class="mode-learn">
   <a class="skip-link" href="#main">Skip to main content</a>
 
-  <header class="site-header">
-    <div class="brand">
-      <span class="brand__icon" id="brandEmoji" aria-hidden="true">🎮</span>
-      <div>
-        <h1>Pattern Play</h1>
-        <p class="tagline">Year 7</p>
+  <!-- Full-screen learning experience -->
+  <div id="learnShell" class="learn-shell">
+    <header class="learn-shell__bar">
+      <div class="learn-shell__brand">
+        <div>
+          <p class="learn-shell__eyebrow">Digital Technologies · Year 7</p>
+          <p class="learn-shell__title">Pattern Recognition</p>
+        </div>
       </div>
-    </div>
-    <div class="header-actions">
-      <button type="button" class="btn btn--ghost" id="btnHowTo" aria-haspopup="dialog">How to play</button>
-      <button type="button" class="btn btn--ghost" id="btnCodex" aria-haspopup="dialog">
-        Pattern cards <span class="badge" id="codexCount" aria-live="polite">0/5</span>
-      </button>
-    </div>
-  </header>
+      <p class="learn-shell__chapter-label" id="learnChapterLabel" aria-live="polite"></p>
+    </header>
 
-  <div class="layout">
-    <nav class="mission-nav" aria-label="Levels">
-      <h2 class="visually-hidden">Levels — unlock in order</h2>
-      <ol class="mission-strip" id="missionStrip"></ol>
-    </nav>
-
-    <main id="main" class="main-stage">
-      <section class="intro-card" id="introCard" hidden>
-        <h2>Welcome</h2>
-        <p>
-          Each <strong>level</strong> has a different look. Look at the row of tiles,
-          work out the <strong>rule</strong>, then <strong>give your answer</strong>
-          (type it or choose an option).
-          Get it right to unlock the next level and a new <strong>pattern card</strong>.
+    <!-- Content stage (one page visible at a time) -->
+    <div class="learn-stage" id="learnStage">
+      <section class="learn-landing learn-page is-active" id="learnLanding" data-page="0">
+      <div class="learn-landing__inner">
+        <p class="learn-landing__kicker">Learning module</p>
+        <h1 class="learn-landing__headline">Understanding patterns in data and the world around you</h1>
+        <p class="learn-landing__lead">
+          Read how humans and computers notice repetition, predict what comes next,
+          and make sense of ordered information.
         </p>
-        <ul>
-          <li>Look at the whole row before you type.</li>
-          <li>You’ll see each new pattern card after a correct answer.</li>
-          <li>Press <strong>Submit</strong> or Enter to check.</li>
+        <ul class="learn-landing__topics">
+          <li>
+            <span class="learn-landing__topic-num">01</span>
+            <span>What counts as a pattern — and what does not</span>
+          </li>
+          <li>
+            <span class="learn-landing__topic-num">02</span>
+            <span>Sequences, rules, and steady change</span>
+          </li>
+          <li>
+            <span class="learn-landing__topic-num">03</span>
+            <span>Cycles, building steps, woven threads, and shifting rules</span>
+          </li>
+          <li>
+            <span class="learn-landing__topic-num">04</span>
+            <span>How to investigate when the rule is not obvious</span>
+          </li>
         </ul>
-        <button type="button" class="btn btn--primary" id="btnStart">Start level 1</button>
-      </section>
-
-      <section class="game-panel" id="gamePanel" aria-live="polite" aria-atomic="false">
-        <header class="game-panel__head">
-          <h2 id="missionTitle">Level</h2>
-        </header>
-
-        <p class="mission-brief" id="missionBrief"></p>
-
-        <div class="pattern-stage" aria-label="Pattern row">
-          <div class="pattern-stage__lines" id="patternRow"></div>
+      </div>
+      <div class="learn-landing__visual" aria-hidden="true">
+        <div class="learn-mosaic">
+          <div class="learn-mosaic__row learn-mosaic__row--a">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <div class="learn-mosaic__row learn-mosaic__row--b">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <div class="learn-mosaic__row learn-mosaic__row--c">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <div class="learn-mosaic__row learn-mosaic__row--d">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <div class="learn-mosaic__scan" aria-hidden="true"></div>
         </div>
+      </div>
+    </section>
 
-        <p class="question" id="questionText"></p>
+    <div class="learn-lesson learn-page" id="learnLesson" data-page="lesson" hidden>
+      <nav class="learn-sidebar" aria-label="Reading sections">
+        <ol class="learn-sidebar__list" id="learnSidebar"></ol>
+      </nav>
 
-        <div class="answer-field answer-field--single" id="answerFieldSingle">
-          <label class="answer-field__label" for="answerInput" id="answerLabel">Your answer</label>
-          <input
-            type="text"
-            id="answerInput"
-            class="answer-input"
-            maxlength="24"
-            autocomplete="off"
-            autocorrect="off"
-            autocapitalize="off"
-            spellcheck="false"
-            inputmode="text"
-          />
-        </div>
-
-        <div class="answer-field answer-field--choice" id="answerFieldChoice" hidden>
-          <fieldset class="choice-fieldset">
-            <legend class="answer-field__label" id="choiceLegend">Choose one</legend>
-            <div class="choice-options" id="choiceOptions" role="radiogroup" aria-labelledby="choiceLegend"></div>
-          </fieldset>
-        </div>
-
-        <div class="answer-field answer-field--pair" id="answerFieldPair" hidden>
-          <div class="answer-field__pair-row">
-            <div class="answer-field__cell">
-              <label class="answer-field__label" for="answerInput1">Top line</label>
-              <input
-                type="text"
-                id="answerInput1"
-                class="answer-input"
-                maxlength="12"
-                autocomplete="off"
-                autocorrect="off"
-                autocapitalize="off"
-                spellcheck="false"
-                inputmode="numeric"
-              />
+      <main class="learn-main" id="learnMain">
+        <article class="learn-chapter is-active" data-chapter="0" id="learnChapter0">
+          <h2>Patterns everywhere</h2>
+          <p class="learn-lead">
+            A <strong>pattern</strong> is something that follows a rule you can describe and reuse.
+            Once you know the rule, you can explain what you have seen and make a reasonable guess
+            about what might come next.
+          </p>
+          <p>
+            Patterns appear in nature — seasons, tides, the phases of the moon. They appear in music
+            when a chorus returns. They appear in code when a program repeats the same steps for
+            every item in a list.
+          </p>
+          <div class="learn-demo">
+            <p class="learn-demo__caption">Random vs patterned</p>
+            <div class="learn-demo__row">
+              <span class="learn-demo__chip learn-demo__chip--muted">7</span>
+              <span class="learn-demo__chip learn-demo__chip--muted">2</span>
+              <span class="learn-demo__chip learn-demo__chip--muted">9</span>
+              <span class="learn-demo__chip learn-demo__chip--muted">1</span>
+              <span class="learn-demo__label">hard to predict</span>
             </div>
-            <div class="answer-field__cell">
-              <label class="answer-field__label" for="answerInput2">Bottom line</label>
-              <input
-                type="text"
-                id="answerInput2"
-                class="answer-input"
-                maxlength="12"
-                autocomplete="off"
-                autocorrect="off"
-                autocapitalize="off"
-                spellcheck="false"
-                inputmode="numeric"
-              />
+            <div class="learn-demo__row">
+              <span class="learn-demo__chip">10</span>
+              <span class="learn-demo__chip">20</span>
+              <span class="learn-demo__chip">30</span>
+              <span class="learn-demo__chip">40</span>
+              <span class="learn-demo__label">add 10 each time</span>
             </div>
           </div>
-        </div>
+          <p>
+            In Digital Technologies, <strong>pattern recognition</strong> is part of
+            <strong>computational thinking</strong>: organising information logically, spotting what
+            stays the same, and describing the steps that produce a result.
+          </p>
+          <blockquote class="learn-quote">
+            Computers are fast at applying a rule millions of times. People are good at finding the
+            rule in the first place.
+          </blockquote>
+        </article>
 
-        <div class="actions">
-          <button type="button" class="btn btn--primary" id="btnSubmit">Submit</button>
-        </div>
+        <article class="learn-chapter" data-chapter="1" id="learnChapter1" hidden>
+          <h2>Sequences and rules</h2>
+          <p class="learn-lead">
+            A <strong>sequence</strong> is an ordered list where position matters. Each item is called
+            a <strong>term</strong>. The <strong>rule</strong> tells you how one term relates to the
+            ones around it.
+          </p>
+          <p>
+            Think of footprints in sand: each step comes after the last. If the stride is regular,
+            you can picture the next footprint before you reach it. That is the same kind of thinking
+            used when reading sensor data, animation frames, or rows in a spreadsheet.
+          </p>
+          <div class="learn-demo">
+            <p class="learn-demo__caption">A sequence with a clear rule</p>
+            <div class="learn-demo__sequence">
+              <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span class="learn-demo__next">?</span>
+            </div>
+            <p class="learn-demo__note">The rule comes from a familiar cycle — days of the week.</p>
+          </div>
+          <p>
+            Some rules connect <em>neighbouring</em> terms (what changes from one to the next?). Other
+            rules connect each term to <em>earlier</em> terms (what history does this term depend on?).
+            Naming which kind you are dealing with is often the first breakthrough.
+          </p>
+        </article>
 
-        <div class="feedback" id="feedback" role="status" aria-live="assertive"></div>
-      </section>
+        <article class="learn-chapter" data-chapter="2" id="learnChapter2" hidden>
+          <h2>Steady change</h2>
+          <p class="learn-lead">
+            Many number patterns grow or shrink by the <strong>same amount</strong> every step.
+            The gap between neighbours is constant.
+          </p>
+          <div class="learn-demo">
+            <p class="learn-demo__caption">Growing by 5</p>
+            <div class="learn-demo__sequence learn-demo__sequence--nums">
+              <span>4</span><span>9</span><span>14</span><span>19</span><span>24</span>
+            </div>
+            <p class="learn-demo__note">Each term is 5 more than the one before.</p>
+          </div>
+          <div class="learn-demo">
+            <p class="learn-demo__caption">Shrinking by 3</p>
+            <div class="learn-demo__sequence learn-demo__sequence--nums">
+              <span>40</span><span>37</span><span>34</span><span>31</span><span>28</span>
+            </div>
+            <p class="learn-demo__note">Each term is 3 less than the one before.</p>
+          </div>
+          <p>
+            Temperature dropping through an evening, a countdown timer, or a stack of blocks removed
+            one at a time — all can follow steady change. When you see this kind of pattern, write
+            down the gap. If it is always the same, you have found a large part of the rule.
+          </p>
+        </article>
 
-      <section class="complete-card" id="completeCard" hidden>
-        <h2>You finished all levels</h2>
-        <p>Your pattern cards are full. Nice work.</p>
-        <button type="button" class="btn btn--primary" id="btnReplay">Play again from level 1</button>
-      </section>
-    </main>
-  </div>
+        <article class="learn-chapter" data-chapter="3" id="learnChapter3" hidden>
+          <h2>Cycles that repeat</h2>
+          <p class="learn-lead">
+            A <strong>repeating pattern</strong> uses the same block of elements over and over,
+            in the same order. The block is called the <strong>unit</strong> or <strong>cycle</strong>.
+          </p>
+          <div class="learn-demo">
+            <p class="learn-demo__caption">A three-part cycle</p>
+            <div class="learn-demo__sequence learn-demo__sequence--shapes">
+              <span class="shape shape--diamond">◆</span>
+              <span class="shape shape--circle">●</span>
+              <span class="shape shape--square">■</span>
+              <span class="shape shape--diamond">◆</span>
+              <span class="shape shape--circle">●</span>
+              <span class="shape shape--square">■</span>
+            </div>
+          </div>
+          <div class="learn-demo">
+            <p class="learn-demo__caption">Stripes in design</p>
+            <div class="learn-demo__stripes">
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+            </div>
+            <p class="learn-demo__note">Two colours alternating — a cycle of length two.</p>
+          </div>
+          <p>
+            Pixel art, weaving, and loading animations on a screen often rely on short cycles.
+            To analyse a repeating pattern, ask: <em>How long is the unit before it starts again?</em>
+          </p>
+        </article>
 
-  <!-- How to play -->
-  <div class="modal" id="modalHowTo" role="dialog" aria-modal="true" aria-labelledby="howToTitle" hidden>
-    <div class="modal__backdrop" data-close-modal></div>
-    <div class="modal__content">
-      <button type="button" class="modal__close" data-close-modal aria-label="Close">&times;</button>
-      <h2 id="howToTitle">How to play</h2>
-      <ol>
-        <li>Only <strong>level 1</strong> is open at first. Finish it to unlock the next.</li>
-        <li>Read the row of tiles and work out what goes in the gap.</li>
-        <li><strong>Type your answer</strong> in the box (or <strong>choose an option</strong> on the last level), then press <strong>Submit</strong> or Enter.</li>
-        <li>Wrong guess? Read the message and try again.</li>
-        <li>After each level you’ll see the <strong>pattern card</strong> you earned — tap <strong>Next</strong> to continue.</li>
-      </ol>
+        <article class="learn-chapter" data-chapter="4" id="learnChapter4" hidden>
+          <h2>Each step builds on the last</h2>
+          <p class="learn-lead">
+            Not every pattern adds the same amount each time. Some patterns <strong>multiply</strong>
+            — each term is double the previous one. Others <strong>combine earlier terms</strong> to
+            create the next.
+          </p>
+          <div class="learn-demo">
+            <p class="learn-demo__caption">Doubling</p>
+            <div class="learn-demo__sequence learn-demo__sequence--nums">
+              <span>3</span><span>6</span><span>12</span><span>24</span><span>48</span>
+            </div>
+            <p class="learn-demo__note">Each term × 2. Common in growth models and computer memory sizes.</p>
+          </div>
+          <div class="learn-demo">
+            <p class="learn-demo__caption">Combining the two before</p>
+            <div class="learn-demo__sequence learn-demo__sequence--nums">
+              <span>1</span><span>1</span><span>2</span><span>3</span><span>5</span><span>8</span>
+            </div>
+            <p class="learn-demo__note">Each new term = sum of the two terms before it. Found in nature, art, and architecture.</p>
+          </div>
+          <p>
+            When neighbours do not share a simple gap, look further back. Does the new value depend
+            on one previous term or on several?
+          </p>
+        </article>
+
+        <article class="learn-chapter" data-chapter="5" id="learnChapter5" hidden>
+          <h2>Two stories in one line</h2>
+          <p class="learn-lead">
+            Sometimes a single row hides <strong>two patterns at once</strong>, woven together.
+            One pattern lives in the odd positions; another lives in the even positions.
+          </p>
+          <div class="learn-demo">
+            <p class="learn-demo__caption">Split the row into two tracks</p>
+            <div class="learn-demo__tracks">
+              <div class="learn-demo__track">
+                <span class="learn-demo__track-label">Track A (1st, 3rd, 5th…)</span>
+                <span>A</span><span>C</span><span>E</span><span>G</span>
+              </div>
+              <div class="learn-demo__track">
+                <span class="learn-demo__track-label">Track B (2nd, 4th, 6th…)</span>
+                <span>10</span><span>20</span><span>30</span><span>40</span>
+              </div>
+            </div>
+            <div class="learn-demo__sequence learn-demo__sequence--mixed">
+              <span>A</span><span>10</span><span>C</span><span>20</span><span>E</span><span>30</span><span>G</span><span>40</span>
+            </div>
+            <p class="learn-demo__note">The combined row looks mixed — until you separate the threads.</p>
+          </div>
+          <p>
+            Audio and video interleaving, or merging two data streams into one file, use similar ideas.
+            When a sequence feels “messy,” try separating odd and even positions before you decide there
+            is no rule.
+          </p>
+        </article>
+
+        <article class="learn-chapter" data-chapter="6" id="learnChapter6" hidden>
+          <h2>Rules that take turns</h2>
+          <p class="learn-lead">
+            Some patterns use <strong>two different rules</strong> that alternate: first rule A, then
+            rule B, then rule A again. The change from one term to the next is not always the same —
+            but the <em>pair</em> of changes may repeat.
+          </p>
+          <div class="learn-demo">
+            <p class="learn-demo__caption">+4, then −1, then +4, then −1…</p>
+            <div class="learn-demo__sequence learn-demo__sequence--nums">
+              <span>12</span><span>16</span><span>15</span><span>19</span><span>18</span><span>22</span>
+            </div>
+          </div>
+          <div class="learn-demo">
+            <p class="learn-demo__caption">Size and shape alternate</p>
+            <div class="learn-demo__sequence learn-demo__sequence--shapes">
+              <span class="shape shape--lg">▲</span>
+              <span class="shape shape--sm">●</span>
+              <span class="shape shape--lg">▲</span>
+              <span class="shape shape--sm">●</span>
+              <span class="shape shape--lg">▲</span>
+            </div>
+          </div>
+          <p>
+            Compare first-to-second, second-to-third, third-to-fourth. If you see two different
+            operations cycling, you are likely looking at an alternating rule set.
+          </p>
+        </article>
+
+        <article class="learn-chapter" data-chapter="7" id="learnChapter7" hidden>
+          <h2>Investigating a pattern</h2>
+          <p class="learn-lead">
+            When the rule is hidden, use a calm, repeatable process — the same kind of careful
+            thinking programmers use before writing code.
+          </p>
+          <ol class="learn-process">
+            <li>
+              <strong>Look at the whole sequence.</strong>
+              Do not focus on a single gap too early. Context from earlier and later terms matters.
+            </li>
+            <li>
+              <strong>Describe what changes.</strong>
+              Note gaps, shapes, or relationships between neighbours and between terms further apart.
+            </li>
+            <li>
+              <strong>Propose a rule in words.</strong>
+              “Adds 5 each time,” “repeats red-blue,” “odd spots count by 2…”
+            </li>
+            <li>
+              <strong>Test on terms you already know.</strong>
+              If your rule fails on an existing term, revise it — do not force it to fit.
+            </li>
+            <li>
+              <strong>Explain your reasoning.</strong>
+              Being able to justify a pattern is as important as spotting it. That explanation can
+              become an algorithm someone else — or a computer — can follow.
+            </li>
+          </ol>
+          <p>
+            Pattern recognition is not about quick guessing. It is about building a clear story for
+            why the sequence behaves the way it does — in mathematics, in science, and in every
+            digital system you will design or use.
+          </p>
+        </article>
+      </main>
     </div>
-  </div>
 
-  <!-- Pattern cards (library) -->
-  <div class="modal" id="modalCodex" role="dialog" aria-modal="true" aria-labelledby="codexTitle" hidden>
-    <div class="modal__backdrop" data-close-modal></div>
-    <div class="modal__content modal__content--wide">
-      <button type="button" class="modal__close" data-close-modal aria-label="Close">&times;</button>
-      <h2 id="codexTitle">Pattern cards</h2>
-      <p class="codex-intro">You earn a card when you finish a level. Locked cards show “???” until then.</p>
-      <div class="codex-grid" id="codexGrid"></div>
+    <section class="learn-outro learn-page" id="learnOutro" data-page="9" hidden>
+      <div class="learn-outro__inner">
+        <p class="learn-outro__kicker">Summary</p>
+        <h2>You have finished reading</h2>
+        <p class="learn-outro__lead">
+          You explored how patterns appear in the world, how rules shape sequences, and how to
+          investigate when the rule is not obvious. These ideas sit at the heart of computational
+          thinking in Digital Technologies.
+        </p>
+        <div class="learn-outro__card">
+          <h3 class="learn-outro__card-title">Key ideas to remember</h3>
+          <ul class="learn-outro__recap">
+            <li>
+              <span class="learn-outro__recap-mark" aria-hidden="true">✓</span>
+              <span>Patterns follow describable rules — randomness does not.</span>
+            </li>
+            <li>
+              <span class="learn-outro__recap-mark" aria-hidden="true">✓</span>
+              <span>Rules can repeat, change steadily, combine earlier terms, weave together, or take turns.</span>
+            </li>
+            <li>
+              <span class="learn-outro__recap-mark" aria-hidden="true">✓</span>
+              <span>Investigate the whole sequence before you commit to a single explanation.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
     </div>
+
+    <footer class="learn-shell__footer" id="learnFooter">
+      <button type="button" class="btn btn--ghost" id="btnLearnPrev">Previous page</button>
+      <div class="learn-shell__pager">
+        <ol class="learn-pager__dots" id="learnPagerDots" aria-label="Pages"></ol>
+        <p class="learn-pager__label" id="learnPageLabel" aria-live="polite">Page 1 of 10</p>
+      </div>
+      <button type="button" class="btn btn--primary" id="btnLearnNext">Next page</button>
+    </footer>
   </div>
 
-  <!-- Card unlocked (must use Next — no backdrop close) -->
-  <div class="modal" id="modalCardReward" role="dialog" aria-modal="true" aria-labelledby="cardRewardHeading" hidden>
-    <div class="modal__backdrop modal__backdrop--static" aria-hidden="true"></div>
-    <div class="modal__content modal__content--reward">
-      <h2 id="cardRewardHeading">Pattern card unlocked</h2>
-      <p class="card-reward__meta" id="cardRewardLevel"></p>
-      <p class="card-reward__task" id="cardRewardTask"></p>
-      <div class="card-reward__box" id="cardRewardBox"></div>
-      <button type="button" class="btn btn--primary btn--wide" id="btnCardNext">Next level</button>
+  <!-- Pattern Play app -->
+  <div id="appShell" class="app-shell" hidden>
+    <header class="site-header">
+      <div class="brand">
+        <span class="brand__icon" id="brandEmoji" aria-hidden="true">🎮</span>
+        <div>
+          <h1>Pattern Play</h1>
+          <p class="tagline">Year 7</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button type="button" class="btn btn--ghost" id="btnLearn">Reading</button>
+        <button type="button" class="btn btn--ghost" id="btnHowTo" aria-haspopup="dialog">How to play</button>
+        <button type="button" class="btn btn--ghost" id="btnCodex" aria-haspopup="dialog">
+          Pattern cards <span class="badge" id="codexCount" aria-live="polite">0/5</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="layout">
+      <nav class="mission-nav" aria-label="Levels">
+        <h2 class="visually-hidden">Levels — unlock in order</h2>
+        <ol class="mission-strip" id="missionStrip"></ol>
+      </nav>
+
+      <main id="main" class="main-stage">
+        <section class="intro-card" id="introCard" hidden>
+          <h2>Welcome</h2>
+          <p>
+            Each <strong>level</strong> has a different look. Look at the row of tiles,
+            work out the <strong>rule</strong>, then <strong>give your answer</strong>
+            (type it or choose an option).
+            Get it right to unlock the next level and a new <strong>pattern card</strong>.
+          </p>
+          <ul>
+            <li>Look at the whole row before you type.</li>
+            <li>You’ll see each new pattern card after a correct answer.</li>
+            <li>Press <strong>Submit</strong> or Enter to check.</li>
+          </ul>
+          <button type="button" class="btn btn--primary" id="btnStart">Start level 1</button>
+        </section>
+
+        <section class="game-panel" id="gamePanel" aria-live="polite" aria-atomic="false" hidden>
+          <header class="game-panel__head">
+            <h2 id="missionTitle">Level</h2>
+          </header>
+
+          <p class="mission-brief" id="missionBrief"></p>
+
+          <div class="pattern-stage" aria-label="Pattern row">
+            <div class="pattern-stage__lines" id="patternRow"></div>
+          </div>
+
+          <p class="question" id="questionText"></p>
+
+          <div class="answer-field answer-field--single" id="answerFieldSingle">
+            <label class="answer-field__label" for="answerInput" id="answerLabel">Your answer</label>
+            <input
+              type="text"
+              id="answerInput"
+              class="answer-input"
+              maxlength="24"
+              autocomplete="off"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false"
+              inputmode="text"
+            />
+          </div>
+
+          <div class="answer-field answer-field--choice" id="answerFieldChoice" hidden>
+            <fieldset class="choice-fieldset">
+              <legend class="answer-field__label" id="choiceLegend">Choose one</legend>
+              <div class="choice-options" id="choiceOptions" role="radiogroup" aria-labelledby="choiceLegend"></div>
+            </fieldset>
+          </div>
+
+          <div class="answer-field answer-field--pair" id="answerFieldPair" hidden>
+            <div class="answer-field__pair-row">
+              <div class="answer-field__cell">
+                <label class="answer-field__label" for="answerInput1">Top line</label>
+                <input
+                  type="text"
+                  id="answerInput1"
+                  class="answer-input"
+                  maxlength="12"
+                  autocomplete="off"
+                  autocorrect="off"
+                  autocapitalize="off"
+                  spellcheck="false"
+                  inputmode="numeric"
+                />
+              </div>
+              <div class="answer-field__cell">
+                <label class="answer-field__label" for="answerInput2">Bottom line</label>
+                <input
+                  type="text"
+                  id="answerInput2"
+                  class="answer-input"
+                  maxlength="12"
+                  autocomplete="off"
+                  autocorrect="off"
+                  autocapitalize="off"
+                  spellcheck="false"
+                  inputmode="numeric"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button type="button" class="btn btn--primary" id="btnSubmit">Submit</button>
+          </div>
+
+          <div class="feedback" id="feedback" role="status" aria-live="assertive"></div>
+        </section>
+
+        <section class="complete-card" id="completeCard" hidden>
+          <h2>You finished all levels</h2>
+          <p>Your pattern cards are full. Nice work.</p>
+          <button type="button" class="btn btn--primary" id="btnReplay">Play again from level 1</button>
+        </section>
+      </main>
+    </div>
+
+    <!-- How to play -->
+    <div class="modal" id="modalHowTo" role="dialog" aria-modal="true" aria-labelledby="howToTitle" hidden>
+      <div class="modal__backdrop" data-close-modal></div>
+      <div class="modal__content">
+        <button type="button" class="modal__close" data-close-modal aria-label="Close">&times;</button>
+        <h2 id="howToTitle">How to play</h2>
+        <ol>
+          <li>Only <strong>level 1</strong> is open at first. Finish it to unlock the next.</li>
+          <li>Read the row of tiles and work out what goes in the gap.</li>
+          <li><strong>Type your answer</strong> in the box (or <strong>choose an option</strong> on the last level), then press <strong>Submit</strong> or Enter.</li>
+          <li>Not correct? Work through the pattern again and try another answer.</li>
+          <li>After each level you’ll see the <strong>pattern card</strong> you earned — tap <strong>Next</strong> to continue.</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Pattern cards (library) -->
+    <div class="modal" id="modalCodex" role="dialog" aria-modal="true" aria-labelledby="codexTitle" hidden>
+      <div class="modal__backdrop" data-close-modal></div>
+      <div class="modal__content modal__content--wide">
+        <button type="button" class="modal__close" data-close-modal aria-label="Close">&times;</button>
+        <h2 id="codexTitle">Pattern cards</h2>
+        <p class="codex-intro">You earn a card when you finish a level. Locked cards show “???” until then.</p>
+        <div class="codex-grid" id="codexGrid"></div>
+      </div>
+    </div>
+
+    <!-- Card unlocked (must use Next — no backdrop close) -->
+    <div class="modal" id="modalCardReward" role="dialog" aria-modal="true" aria-labelledby="cardRewardHeading" hidden>
+      <div class="modal__backdrop modal__backdrop--static" aria-hidden="true"></div>
+      <div class="modal__content modal__content--reward">
+        <h2 id="cardRewardHeading">Pattern card unlocked</h2>
+        <p class="card-reward__meta" id="cardRewardLevel"></p>
+        <p class="card-reward__task" id="cardRewardTask"></p>
+        <div class="card-reward__box" id="cardRewardBox"></div>
+        <button type="button" class="btn btn--primary btn--wide" id="btnCardNext">Next level</button>
+      </div>
     </div>
   </div>
 

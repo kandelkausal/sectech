@@ -5,8 +5,28 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "patternPlay_y7_v1";
+  const STORAGE_KEY = "patternPlay_y7_v3";
   const MAX_ANSWER_LEN = 24;
+  const LEARN_CHAPTER_COUNT = 8;
+
+  const LEARN_CHAPTERS = [
+    { id: "patterns-everywhere", title: "Patterns everywhere" },
+    { id: "sequences-rules", title: "Sequences and rules" },
+    { id: "steady-change", title: "Steady change" },
+    { id: "cycles", title: "Cycles that repeat" },
+    { id: "building-steps", title: "Each step builds on the last" },
+    { id: "two-stories", title: "Two stories in one line" },
+    { id: "turn-taking", title: "Rules that take turns" },
+    { id: "investigating", title: "Investigating a pattern" },
+  ];
+
+  const LEARN_PAGE_COUNT = LEARN_CHAPTER_COUNT + 2; // landing + chapters + outro
+
+  const LEARN_PAGE_TITLES = [
+    "Introduction",
+    ...LEARN_CHAPTERS.map((c) => c.title),
+    "Summary",
+  ];
 
   const THEME_EMOJI = {
     arcade: "🎟️",
@@ -151,6 +171,22 @@
   ];
 
   const el = {
+    appShell: document.getElementById("appShell"),
+    learnShell: document.getElementById("learnShell"),
+    learnLanding: document.getElementById("learnLanding"),
+    learnLesson: document.getElementById("learnLesson"),
+    learnOutro: document.getElementById("learnOutro"),
+    learnStage: document.getElementById("learnStage"),
+    learnFooter: document.getElementById("learnFooter"),
+    learnSidebar: document.getElementById("learnSidebar"),
+    learnMain: document.getElementById("learnMain"),
+    learnChapterLabel: document.getElementById("learnChapterLabel"),
+    learnPageLabel: document.getElementById("learnPageLabel"),
+    learnPagerDots: document.getElementById("learnPagerDots"),
+    btnLearn: document.getElementById("btnLearn"),
+    btnLearnPrev: document.getElementById("btnLearnPrev"),
+    btnLearnNext: document.getElementById("btnLearnNext"),
+    layout: document.querySelector(".layout"),
     missionStrip: document.getElementById("missionStrip"),
     introCard: document.getElementById("introCard"),
     gamePanel: document.getElementById("gamePanel"),
@@ -188,6 +224,12 @@
   let state = loadState();
   let currentMissionIndex = 0;
   let pendingAfterCard = null;
+  let currentLearnChapter = 0;
+  let currentLearnPage = 0;
+
+  function learnPageToChapter(page) {
+    return page - 1;
+  }
 
   function loadState() {
     try {
@@ -202,7 +244,11 @@
         };
       }
     } catch (_) {}
-    return { highestUnlocked: 1, codexUnlocked: new Set(), seenIntro: false };
+    return {
+      highestUnlocked: 1,
+      codexUnlocked: new Set(),
+      seenIntro: false,
+    };
   }
 
   function saveState() {
@@ -387,6 +433,127 @@
     el.feedback.className = "feedback";
   }
 
+  function hideAllPhases() {
+    el.introCard.hidden = true;
+    el.gamePanel.hidden = true;
+    el.completeCard.hidden = true;
+  }
+
+  function setAppMode() {
+    document.body.classList.remove("mode-learn");
+    document.body.classList.add("mode-app");
+    el.learnShell.hidden = true;
+    el.appShell.hidden = false;
+  }
+
+  function setLearnMode() {
+    document.body.classList.remove("mode-app");
+    document.body.classList.add("mode-learn");
+    el.appShell.hidden = true;
+    el.learnShell.hidden = false;
+  }
+
+  function renderLearnSidebar() {
+    if (!el.learnSidebar) return;
+    el.learnSidebar.innerHTML = "";
+    LEARN_CHAPTERS.forEach((ch, idx) => {
+      const li = document.createElement("li");
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = ch.title;
+      const pageForChapter = idx + 1;
+      btn.className = pageForChapter === currentLearnPage ? "is-current" : "";
+      if (pageForChapter < currentLearnPage) btn.classList.add("is-read");
+      btn.addEventListener("click", () => showLearnPage(pageForChapter));
+      li.appendChild(btn);
+      el.learnSidebar.appendChild(li);
+    });
+  }
+
+  function renderLearnPager() {
+    if (!el.learnPagerDots) return;
+    el.learnPagerDots.innerHTML = "";
+    for (let i = 0; i < LEARN_PAGE_COUNT; i++) {
+      const li = document.createElement("li");
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "learn-pager__dot";
+      if (i === currentLearnPage) btn.classList.add("is-current");
+      if (i < currentLearnPage) btn.classList.add("is-read");
+      btn.setAttribute("aria-label", `Page ${i + 1}: ${LEARN_PAGE_TITLES[i]}`);
+      btn.setAttribute("aria-current", i === currentLearnPage ? "step" : "false");
+      btn.addEventListener("click", () => showLearnPage(i));
+      li.appendChild(btn);
+      el.learnPagerDots.appendChild(li);
+    }
+  }
+
+  function updateLearnNav() {
+    const onFirst = currentLearnPage === 0;
+    const onLast = currentLearnPage === LEARN_PAGE_COUNT - 1;
+
+    el.btnLearnPrev.hidden = onFirst;
+    if (el.learnFooter) el.learnFooter.classList.toggle("is-first-page", onFirst);
+    el.btnLearnNext.textContent = onLast ? "Enter Pattern Play" : "Next page";
+
+    if (el.learnPageLabel) {
+      el.learnPageLabel.textContent = `Page ${currentLearnPage + 1} of ${LEARN_PAGE_COUNT}`;
+    }
+    if (el.learnChapterLabel) {
+      el.learnChapterLabel.textContent = LEARN_PAGE_TITLES[currentLearnPage] || "";
+    }
+
+    renderLearnSidebar();
+    renderLearnPager();
+  }
+
+  function showLearnPage(page) {
+    currentLearnPage = Math.min(Math.max(0, page), LEARN_PAGE_COUNT - 1);
+    currentLearnChapter = learnPageToChapter(currentLearnPage);
+    setLearnMode();
+
+    const onLanding = currentLearnPage === 0;
+    const onOutro = currentLearnPage === LEARN_PAGE_COUNT - 1;
+    const onChapter = currentLearnPage >= 1 && currentLearnPage <= LEARN_CHAPTER_COUNT;
+
+    el.learnLanding.hidden = !onLanding;
+    el.learnLesson.hidden = !onChapter;
+    el.learnOutro.hidden = !onOutro;
+
+    if (onChapter) {
+      const chapterIndex = currentLearnChapter;
+      el.learnMain.querySelectorAll(".learn-chapter").forEach((chapter) => {
+        const idx = Number(chapter.dataset.chapter);
+        const active = idx === chapterIndex;
+        chapter.hidden = !active;
+        chapter.classList.toggle("is-active", active);
+      });
+      if (el.learnMain) el.learnMain.scrollTop = 0;
+    }
+
+    if (onLanding && el.learnLanding) el.learnLanding.scrollTop = 0;
+    if (onOutro && el.learnOutro) el.learnOutro.scrollTop = 0;
+
+    updateLearnNav();
+  }
+
+  function showLearnLanding() {
+    showLearnPage(0);
+  }
+
+  function finishLearn() {
+    setAppMode();
+    showIntro();
+  }
+
+  function showIntro() {
+    setAppMode();
+    hideAllPhases();
+    applyTheme(null);
+    el.introCard.hidden = false;
+    renderMissionStrip();
+  }
+
   function showFeedback(message, kind) {
     el.feedback.textContent = message;
     el.feedback.className = `feedback is-${kind}`;
@@ -395,6 +562,8 @@
   function showMission(index) {
     const mission = MISSIONS[index];
     if (!mission) return;
+    setAppMode();
+    hideAllPhases();
     currentMissionIndex = index;
     clearFeedback();
     el.introCard.hidden = true;
@@ -598,7 +767,8 @@
         state.highestUnlocked = MISSIONS.length + 1;
         saveState();
         applyTheme(null);
-        el.gamePanel.hidden = true;
+        setAppMode();
+        hideAllPhases();
         el.completeCard.hidden = false;
       }
       renderMissionStrip();
@@ -626,6 +796,32 @@
   function init() {
     updateCodexCount();
     renderCodexGrid();
+    renderLearnSidebar();
+    renderLearnPager();
+
+    el.btnLearn.addEventListener("click", () => showLearnLanding());
+
+    el.btnLearnPrev.addEventListener("click", () => {
+      if (currentLearnPage > 0) showLearnPage(currentLearnPage - 1);
+    });
+
+    el.btnLearnNext.addEventListener("click", () => {
+      if (currentLearnPage >= LEARN_PAGE_COUNT - 1) finishLearn();
+      else showLearnPage(currentLearnPage + 1);
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (!document.body.classList.contains("mode-learn")) return;
+      if (e.target.matches("input, textarea, select")) return;
+      if (e.key === "ArrowRight" && currentLearnPage < LEARN_PAGE_COUNT - 1) {
+        e.preventDefault();
+        showLearnPage(currentLearnPage + 1);
+      }
+      if (e.key === "ArrowLeft" && currentLearnPage > 0) {
+        e.preventDefault();
+        showLearnPage(currentLearnPage - 1);
+      }
+    });
 
     el.btnStart.addEventListener("click", () => {
       state.seenIntro = true;
@@ -638,7 +834,6 @@
       state.codexUnlocked = new Set();
       saveState();
       currentMissionIndex = 0;
-      el.completeCard.hidden = true;
       showMission(0);
     });
 
@@ -692,22 +887,7 @@
       if (e.key === "Escape") e.preventDefault();
     });
 
-    if (!state.seenIntro) {
-      applyTheme(null);
-      el.introCard.hidden = false;
-      el.gamePanel.hidden = true;
-      el.completeCard.hidden = true;
-    } else if (state.highestUnlocked > MISSIONS.length) {
-      applyTheme(null);
-      el.introCard.hidden = true;
-      el.gamePanel.hidden = true;
-      el.completeCard.hidden = false;
-    } else {
-      el.introCard.hidden = true;
-      currentMissionIndex = Math.min(state.highestUnlocked - 1, MISSIONS.length - 1);
-      showMission(currentMissionIndex);
-    }
-
+    showLearnLanding();
     renderMissionStrip();
   }
 
